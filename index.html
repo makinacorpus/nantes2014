@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Élections municipales 2014 à Nantes</title>
+  <meta charset="utf-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+  <link href='http://fonts.googleapis.com/css?family=Cabin' rel='stylesheet' type='text/css'>
+
+  <style>
+
+    html, body {
+      height:100%;
+      font-family: 'Cabin', sans-serif;
+      margin:0;
+    }
+
+    body {
+      width: 98%;
+      padding-left:1%;
+    }
+
+    h1 {
+      margin:0;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+
+    #map {
+      width: 100%;
+      height: 80%;
+    }
+
+    #logo {
+      float: right;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      width: 200px;
+    }
+
+    #title2 {
+      margin: 0;
+    }
+
+    #footer {
+      padding-top: 5px;
+      padding-bottom: 5px;
+      font-size: 1.2em;
+    }
+
+    .info {
+      padding: 6px 8px;
+      font-family: 'Cabin', sans-serif;
+      background: white;
+      background: rgba(255,255,255,0.8);
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
+      min-width: 390px;
+    }
+
+    .legend {
+      text-align: left;
+      line-height: 18px;
+      color: #555;
+    }
+
+    .legend ul {
+      padding-left: 0px;
+    }
+
+    .legend li {
+      list-style-type: none;
+    }
+
+    .leaflet-bar a.leaflet-control-touchhover-toggled {
+      background: #888;
+    }
+
+    @media screen and (max-width: 1080px) {
+      #title2 {
+        font-size: 1em;
+      }
+    }
+
+    @media screen and (max-width: 980px) {
+      #title {
+        font-size: 1.5em;
+      }
+      #title2 {
+        font-size: 0.8em;
+      }
+      #logo {
+        width: 150px;
+      }
+      #footer {
+        font-size: 0.8em;
+      }
+      .parti {
+        display: none;
+      }
+      .info {
+        min-width: 250px;
+      }
+    }
+
+    @media screen and (max-width: 780px) {
+      #title {
+        font-size: 1.4em;
+      }
+      #title2 {
+        font-size: 0.7em;
+      }
+      #footer {
+        display: none;
+      }
+      #map {
+        height: 83%;
+      }
+    }
+
+    @media screen and (max-width: 680px) {
+      #title {
+        font-size: 1.2em;
+      }
+      .info {
+        font-size: 0.8em;
+        min-width: 0px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="header">
+    <a href="http://www.makina-corpus.com" target="_blank"><img id="logo" src="http://depot.makina-corpus.org/public/logo.gif"></a>
+    <h1 id="title">Élections municipales 2014 à Nantes - Premier tour</h1>
+    <h3 id="title2">Résultats par bureau de vote - la couleur affichée est celle du candidat arrivé en tête.</h3>
+  </div>
+  <div id="map"></div>
+  <div id="footer">
+    N'hésitez pas à nous contacter pour votre ville ou pour d'autres projets : <a href="mailto:sig@makina-corpus.com">sig@makina-corpus.com</a>
+  </div>
+
+  <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+<!--   <script type="text/javascript" src="http://d3js.org/d3.v2.js"></script> -->
+  <script type="text/javascript" src="Control.TouchHover.js"></script>
+  <script type="text/javascript" src="bureaux.geojson"></script>
+  <script type="text/javascript" src="bureaux_vote_decoupage2014.json"></script>
+  <script type="text/javascript" src="resultatsG1.json"></script>
+  <script type="text/javascript">
+
+    var osmAttrib='Par <a href="http://www.makina-corpus.com">Makina Corpus</a> | <a href="https://github.com/makinacorpus/nantes2014/tree/gh-pages">Code</a> | <a href="http://data.nantes.fr">Données électorales</a>';
+
+    var map = L.map('map', {maxZoom: 17, minZoom: 11}).setView([47.22, -1.55], 12);
+    // Don't show the 'Powered by Leaflet' text 
+    map.attributionControl.setPrefix(osmAttrib);
+    map.setMaxBounds(new L.LatLngBounds(new L.LatLng(47.31, -1.658),new L.LatLng(47.1757, -1.456)));
+    L.tileLayer("http://{s}.livembtiles.makina-corpus.net/makina/nantes-desaturate/{z}/{x}/{y}.png",{attribution:'&copy; Contributeurs <a href="http://osm.org/copyright">OpenStreetMap</a>'}).addTo(map)
+    //L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:'&copy; Contributeurs <a href="http://osm.org/copyright">OpenStreetMap</a>'}).addTo(map)
+
+        if (L.Browser.touch) {
+      L.control.touchHover().addTo(map);
+    }
+
+    // get color depending on the candidate
+
+    var colors = {
+      'bruckert': '#FB7102'
+      , 'rolland': '#e20040'
+      , 'bouchet': '#1B2638'
+      , 'chiron': '#7AB41D'
+      , 'garnier': '#4D6BA2'
+      , 'kongolo': '#EEA2B0'
+      , 'croupy': '#FF0000'
+      , 'defrance': '#9D0000'
+      , 'van_goethem': '#8297BE'
+      , 'gobet': '#8297BE'
+      , 'nuls': '#CCCCCC'
+    };
+    var fullNames = {
+      'bruckert': 'Xavier Bruckert'
+      , 'rolland': 'Johanna Rolland'
+      , 'bouchet': 'Christian Bouchet'
+      , 'chiron': 'Pascale Chiron'
+      , 'garnier': 'Laurence Garnier'
+      , 'kongolo': 'Arnaud Kongolo'
+      , 'croupy': 'Guy Croupy'
+      , 'defrance': 'Hélène Defrance'
+      , 'van_goethem': 'Sophie Van Goethem'
+      , 'gobet': 'Pierre Gobet'
+      , 'nuls': 'Nuls'
+    };
+    var partis = {
+      'bruckert': 'UC'
+      , 'rolland': 'UG'
+      , 'bouchet': 'FN'
+      , 'chiron': 'VEC'
+      , 'garnier': 'UMP'
+      , 'kongolo': 'DIV'
+      , 'croupy': 'PG'
+      , 'defrance': 'LO'
+      , 'van_goethem': 'DVD'
+      , 'gobet': 'DVD'
+      , 'nuls': ''
+    };
+
+    function getColor(candidat) {
+      return colors[candidat];
+    }
+
+    function bureauxStyle(feature) {
+      return {
+        color: "lightgrey",
+        weight: 1,
+        opacity: 1,
+        fillColor: getColor(Object.keys(results[feature.properties.ASSOCIANT][0])[0]),
+        fillOpacity: 0.6
+      };
+    }
+
+    function highlightFeature(e) {
+      var layer = e.target;
+      legend.update(layer.feature.properties);
+      layer.setStyle({
+        weight: 4,
+      });
+    }
+
+    var geojson;
+
+    function resetHighlight(e) {
+      geojson.setStyle(bureauxStyle);
+      legend.update();
+    }
+
+    function onEachFeature(feature, layer) {
+      layer.on({
+        mouseover: highlightFeature,
+        mouseout: resetHighlight,
+      });
+    }
+
+    geojson = L.geoJson(bureaux, {
+      style: bureauxStyle,
+      onEachFeature: onEachFeature
+    }).addTo(map);
+
+    var legend = L.control({position: 'topright'});
+
+    legend.onAdd = function (map) {
+      this._div = L.DomUtil.create('div', 'legend info');
+      this.update();
+      return this._div;
+    };
+
+    legend.update = function (bureau) {
+      if (bureau) {
+        var resultsList = '<ul>';
+        for(var key in results[bureau.ASSOCIANT]) {
+          var value = results[bureau.ASSOCIANT][key];
+          resultsList += '<li><canvas id="myCanvas" width="';
+          resultsList += value[Object.keys(value)]*2;
+          resultsList += '" height="20" style="border:1px solid ' + colors[Object.keys(value)] + '; background-color:';
+          resultsList += colors[Object.keys(value)];
+          resultsList += '; opacity: 0.6;"></canvas> ';
+          resultsList += fullNames[Object.keys(value)];
+          if (partis[Object.keys(value)]) {
+            resultsList += '<span class="parti"> (' + partis[Object.keys(value)] + ')</span>';
+          }
+          resultsList += ' : ';
+          resultsList += Math.round(value[Object.keys(value)] * 100) / 100;
+          resultsList += '%</li>';
+        };
+        resultsList += '<ul>';
+        this._div.innerHTML = '<b>' + bureau.NOM + '</b> (n°'+ bureau.ASSOCIANT.replace(/^0+/, '') + ')<br />' + resultsList;
+      } else{
+        var resultsList = '<ul>';
+        for(var key in resultsG1) {
+          var value = resultsG1[key];
+          resultsList += '<li><canvas id="myCanvas" width="';
+          resultsList += value[Object.keys(value)]*2;
+          resultsList += '" height="20" style="border:1px solid ' + colors[Object.keys(value)] + '; background-color:';
+          resultsList += colors[Object.keys(value)];
+          resultsList += '; opacity: 0.6;"></canvas> ';
+          resultsList += fullNames[Object.keys(value)];
+          if (partis[Object.keys(value)]) {
+            resultsList += '<span class="parti"> (' + partis[Object.keys(value)] + ')</span>';
+          }
+          resultsList += ' : ';
+          resultsList += value[Object.keys(value)];
+          resultsList += '%</li>';
+        };
+        resultsList += '<ul>';
+        this._div.innerHTML = '<h3>Résultats à Nantes</h3>' + 'Survolez un bureau de vote pour plus de détails' + resultsList;
+      };
+    };
+
+    legend.addTo(map);
+
+  </script>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+  
+    ga('create', 'UA-49309002-1', 'makinacorpus.github.io');
+    ga('send', 'pageview', 'nantes');
+  
+  </script>
+</body>
+</html>
