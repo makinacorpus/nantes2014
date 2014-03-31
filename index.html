@@ -8,133 +8,15 @@
 
   <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
   <link href='http://fonts.googleapis.com/css?family=Cabin' rel='stylesheet' type='text/css'>
-
-  <style>
-
-    html, body {
-      height:100%;
-      font-family: 'Cabin', sans-serif;
-      margin:0;
-    }
-
-    body {
-      width: 98%;
-      padding-left:1%;
-    }
-
-    h1 {
-      margin:0;
-      padding-top: 10px;
-      padding-bottom: 10px;
-    }
-
-    #map {
-      width: 100%;
-      height: 80%;
-    }
-
-    #logo {
-      float: right;
-      padding-top: 5px;
-      padding-bottom: 5px;
-      width: 200px;
-    }
-
-    #title2 {
-      margin: 0;
-    }
-
-    #footer {
-      padding-top: 5px;
-      padding-bottom: 5px;
-      font-size: 1.2em;
-    }
-
-    .info {
-      padding: 6px 8px;
-      font-family: 'Cabin', sans-serif;
-      background: white;
-      background: rgba(255,255,255,0.8);
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-      min-width: 390px;
-    }
-
-    .legend {
-      text-align: left;
-      line-height: 18px;
-      color: #555;
-    }
-
-    .legend ul {
-      padding-left: 0px;
-    }
-
-    .legend li {
-      list-style-type: none;
-    }
-
-    .leaflet-bar a.leaflet-control-touchhover-toggled {
-      background: #888;
-    }
-
-    @media screen and (max-width: 1080px) {
-      #title2 {
-        font-size: 1em;
-      }
-    }
-
-    @media screen and (max-width: 980px) {
-      #title {
-        font-size: 1.5em;
-      }
-      #title2 {
-        font-size: 0.8em;
-      }
-      #logo {
-        width: 150px;
-      }
-      #footer {
-        font-size: 0.8em;
-      }
-      .parti {
-        display: none;
-      }
-      .info {
-        min-width: 250px;
-      }
-    }
-
-    @media screen and (max-width: 780px) {
-      #title {
-        font-size: 1.4em;
-      }
-      #title2 {
-        font-size: 0.7em;
-      }
-      #footer {
-        display: none;
-      }
-      #map {
-        height: 83%;
-      }
-    }
-
-    @media screen and (max-width: 680px) {
-      #title {
-        font-size: 1.2em;
-      }
-      .info {
-        font-size: 0.8em;
-        min-width: 0px;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
   <div id="header">
     <a href="http://www.makina-corpus.com" target="_blank"><img id="logo" src="http://depot.makina-corpus.org/public/logo.gif"></a>
     <h1 id="title">Élections municipales 2014 à Nantes - Premier tour</h1>
     <h3 id="title2">Résultats par bureau de vote - la couleur affichée est celle du candidat arrivé en tête.</h3>
+    <a href="by-candidate.html">Carte par candidat</a> -
+    <a href="second-tour.html">Carte du second tour</a>
   </div>
   <div id="map"></div>
   <div id="footer">
@@ -142,7 +24,6 @@
   </div>
 
   <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
-<!--   <script type="text/javascript" src="http://d3js.org/d3.v2.js"></script> -->
   <script type="text/javascript" src="Control.TouchHover.js"></script>
   <script type="text/javascript" src="bureaux.geojson"></script>
   <script type="text/javascript" src="resultats_bureaux_1.json"></script>
@@ -152,18 +33,16 @@
     var osmAttrib='Par <a href="http://www.makina-corpus.com" target="_blank">Makina Corpus</a> | <a href="https://github.com/makinacorpus/nantes2014/tree/gh-pages" target="_blank">Code</a> | <a href="http://data.nantes.fr/donnees/detail/resultats-du-premier-tour-des-elections-municipales-de-2014-a-nantes/" target="_blank">Données électorales</a> | <a href="http://data.nantes.fr/donnees/detail/decoupage-geographique-des-bureaux-de-vote-de-la-ville-de-nantes/" target="_blank">D&eacute;coupage</a>';
 
     var map = L.map('map', {maxZoom: 17, minZoom: 11}).setView([47.22, -1.55], 12);
-    // Don't show the 'Powered by Leaflet' text 
+    // Don't show the 'Powered by Leaflet' text
     map.attributionControl.setPrefix(osmAttrib);
     map.setMaxBounds(new L.LatLngBounds(new L.LatLng(47.31, -1.658),new L.LatLng(47.1757, -1.456)));
     L.tileLayer("http://{s}.livembtiles.makina-corpus.net/makina/nantes-desaturate/{z}/{x}/{y}.png",{attribution:'&copy; Contributeurs <a href="http://osm.org/copyright" target="_blank">OpenStreetMap</a>'}).addTo(map)
-    //L.tileLayer("http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:'&copy; Contributeurs <a href="http://osm.org/copyright">OpenStreetMap</a>'}).addTo(map)
 
-        if (L.Browser.touch) {
+    if (L.Browser.touch) {
       L.control.touchHover().addTo(map);
     }
 
     // get color depending on the candidate
-
     var colors = {
       'bruckert': '#FB7102'
       , 'rolland': '#e20040'
@@ -258,7 +137,7 @@
         var resultsList = '<ul>';
         for(var key in results[bureau.ASSOCIANT]) {
           var value = results[bureau.ASSOCIANT][key];
-          resultsList += '<li><canvas id="myCanvas" width="';
+          resultsList += '<li><canvas width="';
           resultsList += value[Object.keys(value)]*2;
           resultsList += '" height="20" style="border:1px solid ' + colors[Object.keys(value)] + '; background-color:';
           resultsList += colors[Object.keys(value)];
@@ -277,7 +156,7 @@
         var resultsList = '<ul>';
         for(var key in resultsG1) {
           var value = resultsG1[key];
-          resultsList += '<li><canvas id="myCanvas" width="';
+          resultsList += '<li><canvas width="';
           resultsList += value[Object.keys(value)]*2;
           resultsList += '" height="20" style="border:1px solid ' + colors[Object.keys(value)] + '; background-color:';
           resultsList += colors[Object.keys(value)];
@@ -303,10 +182,9 @@
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
     })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-  
+
     ga('create', 'UA-49309002-1', 'makinacorpus.github.io');
     ga('send', 'pageview', 'nantes');
-  
   </script>
 </body>
 </html>
