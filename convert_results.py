@@ -9,10 +9,12 @@ import sys
 """
     Ce fichier convertit les données brutes de bureaux provenant de
     data.nantes.fr en format lisible par le scrit Leaflet dans index.hmtl
-"""
 candidates = ['DEFRANCE', 'NULS', 'BOUCHET', 'CROUPY', 'GOBET',
               'ROLLAND', 'CHIRON', 'VAN_GOETHEM', 'GARNIER', 'KONGOLO',
               'BRUCKERT']
+"""
+
+candidates = ['NULS', 'ROLLAND', 'GARNIER']
 OfficeResults = namedtuple(
     'OfficeResult',
     ' ,'.join(candidates))
