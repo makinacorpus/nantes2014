@@ -3,7 +3,7 @@ Nantes2014
 
 Cartographie des résultats aux élections municipales 2014 à Nantes, par bureau de vote :
 *  [1er tour](http://municipalesnantes2014.makina-corpus.com/), [par candidat](http://municipalesnantes2014.makina-corpus.com/by-candidate.html)
-*  [2ème tour](http://municipalesnantes2014.makina-corpus.com/index-tour-2.html), [par candidat](http://municipalesnantes2014.makina-corpus.com/by-candidate-tour-2.html)
+*  [2ème tour](http://municipalesnantes2014.makina-corpus.com/second-tour.html)
 
 ## Technologies
 
@@ -20,7 +20,7 @@ Cartographie des résultats aux élections municipales 2014 à Nantes, par burea
   * [par bureau de vote](https://github.com/makinacorpus/nantes2014/blob/gh-pages/resultats_bureaux_1.json)
 
 
-* Résultats du 2ème tour des élections municipales 2014 à Nantes par bureau de vote : [Licence ODbL](http://opendatacommons.org/licenses/odbl/summary/), [Données Makina Corpus](https://raw.githubusercontent.com/makinacorpus/nantes2014/gh-pages/bureaux_vote_decoupage2014.json) 03/2014, [Données Ville de Nantes](http://data.nantes.fr/donnees/detail/resultats-du-second-tour-des-elections-municipales-de-2014-a-nantes/) 03/2014
+* Résultats du 2ème tour des élections municipales 2014 à Nantes par bureau de vote : [Licence ODbL](http://opendatacommons.org/licenses/odbl/summary/), [Données Makina Corpus](https://github.com/makinacorpus/nantes2014/tree/gh-pages) 03/2014, [Données Ville de Nantes](http://data.nantes.fr/donnees/detail/resultats-du-second-tour-des-elections-municipales-de-2014-a-nantes/) 03/2014
   * [global](https://github.com/makinacorpus/nantes2014/blob/gh-pages/resultatsG2.json)
   * [par bureau de vote](https://github.com/makinacorpus/nantes2014/blob/gh-pages/resultats_bureaux_2.json)
 
