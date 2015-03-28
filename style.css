@@ -32,7 +32,6 @@ select {
   float: right;
   padding-top: 5px;
   padding-bottom: 5px;
-  width: 200px;
 }
 
 #title2 {
@@ -85,10 +84,6 @@ select {
 
   #title2 {
     font-size: 0.8em;
-  }
-
-  #logo {
-    width: 150px;
   }
 
   #footer {
